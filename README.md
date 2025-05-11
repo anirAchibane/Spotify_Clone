@@ -1,3 +1,8 @@
+# Notes
+
+for the playback: Spotify API only allows playback for premium users, so for this clone, if you attempt to play a track, an album or a playlist, you will be redirected to spotify web app :)
+
+
 # Nuxt Minimal Starter
 
 Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
