@@ -16,12 +16,24 @@ export default defineNuxtConfig({
     host: '0.0.0.0',
     port: 3000,
   },
-  plugins: ['~/plugins/firebase.client'],
+  plugins: ['~/plugins/firebase.client', '~/plugins/spotify-embed'],
 
   vite: {
     server: {
       hmr: false,
     },
   },
-  css: ['~/assets/fonts/stylesheet.css']
+  css: ['~/assets/fonts/stylesheet.css'],
+  
+  // Add app-wide head configuration
+  app: {
+    head: {
+      script: [
+        {
+          src: 'https://open.spotify.com/embed-podcast/iframe-api/v1',
+          async: true
+        }
+      ]
+    }
+  }
 })

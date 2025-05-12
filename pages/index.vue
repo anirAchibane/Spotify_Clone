@@ -31,22 +31,6 @@
       </div>
     </div>
     
-    <div class="marquee-container">
-      <div class="marquee-content">
-        <span>SPOTIFY ON STEROIDS</span>
-        <span>•</span>
-        <span>SINCE 2025</span>
-        <span>•</span>
-        <span>WORLD RENOWNED</span>
-        <span>•</span>
-        <span>SPOTIFY ON STEROIDS</span>
-        <span>•</span>
-        <span>SINCE 2025</span>
-        <span>•</span>
-        <span>NEO SPOTIFY</span>
-      </div>
-    </div>
-    
 
   </div>
 </template>

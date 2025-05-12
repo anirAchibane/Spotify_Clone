@@ -1,32 +1,31 @@
 <template>
-    <mini-nave-bar></mini-nave-bar>
-    <div v-if="track" class="track-container">
-        <div class="track-header">
-            <img :src="track.album.images[0]?.url" alt="Album Cover" class="track-image">
+    <mini-nave-bar></mini-nave-bar>    <div v-if="track" class="track-container">
+        <div class="track-header" :class="{ 'player-active': isPlayerActive }">
+            <img v-if="!isPlayerActive" :src="track.album.images[0]?.url" alt="Album Cover" class="track-image">
             <div class="track-info">
-                <span class="track-type">SONG</span>
-                <h1>{{ track.name }}</h1>
-                <p class="artists">
-                    <span v-for="(artist, index) in track.artists" :key="artist.id">
-                        <a @click="goToArtist(artist.id)" class="artist-link">{{ artist.name }}</a>
-                        <span v-if="index < track.artists.length - 1">, </span>
-                    </span>
-                </p>
-                <div class="track-meta">
-                    <img :src="track.album.images[2]?.url" alt="Album Thumbnail" class="album-thumb">
-                    <a @click="goToAlbum(track.album.id)" class="album-link">{{ track.album.name }}</a>
-                    <span>•</span>
-                    <span>{{ new Date(track.album.release_date).getFullYear() }}</span>
-                    <span>•</span>
-                    <span>{{ formatDuration(track.duration_ms) }}</span>
+                <div v-if="!isPlayerActive">
+                    <span class="track-type">SONG</span>
+                    <h1>{{ track.name }}</h1>
+                    <p class="artists">
+                        <span v-for="(artist, index) in track.artists" :key="artist.id">
+                            <a @click="goToArtist(artist.id)" class="artist-link">{{ artist.name }}</a>
+                            <span v-if="index < track.artists.length - 1">, </span>
+                        </span>
+                    </p>
+                    <div class="track-meta">
+                        <img :src="track.album.images[2]?.url" alt="Album Thumbnail" class="album-thumb">
+                        <a @click="goToAlbum(track.album.id)" class="album-link">{{ track.album.name }}</a>
+                        <span>•</span>
+                        <span>{{ new Date(track.album.release_date).getFullYear() }}</span>
+                        <span>•</span>
+                        <span>{{ formatDuration(track.duration_ms) }}</span>
+                    </div>
                 </div>
-                <a :href="track.external_urls?.spotify" target="_blank" class="play-button">
-                    Play track
-                </a>
+                <SpotifyEmbed :id="trackId" type="track" size="compact" @visibility-change="handlePlayerVisibility" />
             </div>
         </div>
 
-        <div class="track-details" v-if="audioFeatures">
+        <div class="track-details" v-if="audioFeatures && !isPlayerActive">
             <h2>Track Features</h2>
             <div class="features-grid">
                 <div class="feature-card">
@@ -54,9 +53,7 @@
                     <div class="feature-label">Popularity</div>
                 </div>
             </div>
-        </div>
-
-        <div class="album-context">
+        </div>        <div class="album-context" v-if="!isPlayerActive">
             <h2>From the album</h2>
             <div class="album-info" @click="goToAlbum(track.album.id)">
                 <img :src="track.album.images[1]?.url" alt="Album Cover" class="album-image">
@@ -68,7 +65,7 @@
                     </p>
                 </div>
             </div>
-        </div>        <div class="artist-section" v-if="track.primaryArtistDetails">
+        </div>        <div class="artist-section" v-if="track.primaryArtistDetails && !isPlayerActive">
             <h2>Artist</h2>
             <div class="artist-info" @click="goToArtist(track.primaryArtistDetails.id)">
                 <img 
@@ -98,12 +95,19 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
+import SpotifyEmbed from '~/components/SpotifyEmbed.vue'
 
 const route = useRoute()
 const router = useRouter()
 const trackId = route.params.id
 const track = ref(null)
 const audioFeatures = ref(null)
+const isPlayerActive = ref(false)
+
+// Handle player visibility changes from the SpotifyEmbed component
+const handlePlayerVisibility = (isVisible) => {
+  isPlayerActive.value = isVisible;
+}
 
 const formatDuration = (ms) => {
     const minutes = Math.floor(ms / 60000)
@@ -407,5 +411,17 @@ h3 {
     border-radius: 16px;
     font-size: 0.75rem;
     color: #e4e4e4;
+}
+
+/* Player active state styles */
+.track-header.player-active {
+    align-items: center;
+    justify-content: center;
+}
+
+.track-header.player-active .track-info {
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 </style>

@@ -1,26 +1,24 @@
 <template>
     <mini-nave-bar></mini-nave-bar>
-    <div v-if="album" class="album-container">
-        <div class="album-header">
-            <img :src="album.images[0]?.url" alt="Album Image" width="200" />
+    <div v-if="album" class="album-container">        <div class="album-header" :class="{ 'player-active': isPlayerActive }">
+            <img v-if="!isPlayerActive" :src="album.images[0]?.url" alt="Album Image" width="200" />
             <div class="album-info">
-                <span class="album-type">{{ album.album_type.toUpperCase() }}</span>
-                <h1>{{ album.name }}</h1>
-                <div class="album-meta">
-                    <span v-if="album.artists">
-                        {{ album.artists.map(artist => artist.name).join(', ') }} •
-                    </span>
-                    <span>{{ new Date(album.release_date).getFullYear() }} • </span>
-                    <span>{{ album.total_tracks }} tracks</span>
+                <div v-if="!isPlayerActive">
+                    <span class="album-type">{{ album.album_type.toUpperCase() }}</span>
+                    <h1>{{ album.name }}</h1>
+                    <div class="album-meta">
+                        <span v-if="album.artists">
+                            {{ album.artists.map(artist => artist.name).join(', ') }} •
+                        </span>
+                        <span>{{ new Date(album.release_date).getFullYear() }} • </span>
+                        <span>{{ album.total_tracks }} tracks</span>
+                    </div>
                 </div>
-                <a :href="album.external_urls?.spotify" target="_blank" class="play-button">
-
-                    Play album
-                </a>
+                <SpotifyEmbed :id="albumId" type="album" @visibility-change="handlePlayerVisibility" />
             </div>
         </div>
 
-        <div class="tracks-container">
+        <div class="tracks-container" v-if="!isPlayerActive">
             <div v-for="(track, index) in album.tracks.items" :key="track.id" class="track-item" >
                 <div class="track-number">{{ index + 1 }}</div>
                 <div class="track-info" @click="goToTrack(track.id)">
@@ -43,12 +41,19 @@
 <script setup>
 import { useRoute } from 'vue-router';
 import { ref, onMounted } from 'vue';
-import {useRouter} from 'vue-router'
+import { useRouter } from 'vue-router';
+import SpotifyEmbed from '~/components/SpotifyEmbed.vue'
 
 const album = ref(null);
 const route = useRoute();
 const albumId = route.params.id;
 const router = useRouter();
+const isPlayerActive = ref(false);
+
+// Handle player visibility changes from the SpotifyEmbed component
+const handlePlayerVisibility = (isVisible) => {
+  isPlayerActive.value = isVisible;
+};
 
 onMounted(async () => {
   const token = localStorage.getItem("access_token");
@@ -170,5 +175,17 @@ const goToTrack = (trackId) => {
 .play-button svg {
     width: 24px;
     height: 24px;
+}
+
+/* Player active state styles */
+.album-header.player-active {
+    align-items: center;
+    justify-content: center;
+}
+
+.album-header.player-active .album-info {
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 </style>

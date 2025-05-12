@@ -44,8 +44,7 @@
                 </div>                <div class="buttons-row">
                     <a :href="playlist.external_urls?.spotify" target="_blank" class="play-button">
                          Play
-                    </a>
-                    <div v-if="isUserPlaylistOwner" class="owner-buttons">
+                    </a>                    <div v-if="isUserPlaylistOwner" class="owner-buttons">
                         <button @click="startEditing" class="photo-button">Edit details</button>
                         <button @click="addSongsToPlaylist" class="add-songs-button">
                             Add Songs
